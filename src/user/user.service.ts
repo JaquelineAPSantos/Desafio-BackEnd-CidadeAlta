@@ -24,7 +24,7 @@ export class UserService {
   }
 
   async redeemBadge(userId: number, slug: string): Promise<UserBadge> {
-    const user = await this.userRepository.findOne(userId);
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     const badge = await this.badgeRepository.findOne({ where: { slug } });
 
     if (!user || !badge) {

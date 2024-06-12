@@ -8,5 +8,6 @@ import { BadgeController } from './badge.controller';
   imports: [TypeOrmModule.forFeature([Badge])],
   providers: [BadgeService],
   controllers: [BadgeController],
+  exports: [TypeOrmModule, BadgeService],
 })
 export class BadgeModule {}
