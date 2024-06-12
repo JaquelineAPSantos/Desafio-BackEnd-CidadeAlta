@@ -4,17 +4,27 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserBadge } from './user-badge.entity';
 import { Badge } from '../badge/badge.entity';
+import { UserRepository } from './user.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: UserRepository,
     @InjectRepository(UserBadge)
     private userBadgeRepository: Repository<UserBadge>,
     @InjectRepository(Badge)
     private badgeRepository: Repository<Badge>,
   ) {}
+
+  async findByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findByEmail(username);
+  }
+
+  async findOne(userId: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { id: userId } });
+  }
 
   async findAllBadges(userId: number): Promise<UserBadge[]> {
     return this.userBadgeRepository.find({
@@ -44,5 +54,17 @@ export class UserService {
     userBadge.badge = badge;
 
     return this.userBadgeRepository.save(userBadge);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    return bcrypt.hash(password, salt);
+  }
+
+  async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword);
   }
 }
