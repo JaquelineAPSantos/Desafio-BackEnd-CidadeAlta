@@ -5,21 +5,33 @@ import { User } from './user.entity';
 import { UserBadge } from './user-badge.entity';
 import { Badge } from '../badge/badge.entity';
 import { UserRepository } from './user.repository';
+import { UserBadgeRepository } from './user-badge.repository';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
     private userRepository: UserRepository,
-    @InjectRepository(UserBadge)
-    private userBadgeRepository: Repository<UserBadge>,
+    private userBadgeRepository: UserBadgeRepository,
     @InjectRepository(Badge)
     private badgeRepository: Repository<Badge>,
   ) {}
 
-  async findByUsername(username: string): Promise<User | undefined> {
-    return this.userRepository.findByEmail(username);
+  async createUser(
+    username: string,
+    email: string,
+    password: string,
+  ): Promise<User> {
+    if (!username) {
+      username = 'default_username';
+    }
+    const newUser = this.userRepository.create({ username, email, password });
+    return this.userRepository.save(newUser);
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { username } });
+    return user || null;
   }
 
   async findOne(userId: number): Promise<User | undefined> {
@@ -27,10 +39,11 @@ export class UserService {
   }
 
   async findAllBadges(userId: number): Promise<UserBadge[]> {
-    return this.userBadgeRepository.find({
-      where: { user: { id: userId } },
-      relations: ['badge'],
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['userBadges'],
     });
+    return user?.userBadges || [];
   }
 
   async redeemBadge(userId: number, slug: string): Promise<UserBadge> {
@@ -65,6 +78,7 @@ export class UserService {
     password: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+    const isValid = await bcrypt.compare(password, hashedPassword);
+    return isValid;
   }
 }

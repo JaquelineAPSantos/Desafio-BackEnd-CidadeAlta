@@ -1,73 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Badge System API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este projeto é uma API para gerenciar usuários e emblemas (badges), permitindo que os usuários resgatem emblemas e visualizem os emblemas que já resgataram. A API é construída utilizando o framework [NestJS](https://nestjs.com/) com TypeScript e integra o uso de autenticação JWT para proteger rotas específicas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologias Utilizadas
 
-## Description
+- **NestJS**: Framework de Node.js para construção de aplicações server-side eficientes e escaláveis.
+- **TypeScript**: Superconjunto de JavaScript que adiciona tipagem estática ao código.
+- **TypeORM**: ORM (Object-Relational Mapper) para interagir com o banco de dados.
+- **JWT (JSON Web Token)**: Para autenticação de rotas protegidas.
+- **bcrypt**: Biblioteca para hashing de senhas.
+- **Swagger**: Para documentação da API.
+- **MySQL**: Banco de dados relacional utilizado.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Estrutura do Projeto
 
-## Installation
+- **auth/**: Contém a lógica de autenticação, incluindo estratégias JWT e guardas de autenticação.
+- **user/**: Contém a lógica relacionada aos usuários, incluindo a entidade User e o serviço UserService.
+- **badge/**: Contém a lógica relacionada aos emblemas, incluindo a entidade Badge e o serviço BadgeService.
+- **main.ts**: Arquivo principal para inicializar a aplicação NestJS.
+- **app.module.ts**: Módulo raiz da aplicação que importa e configura todos os outros módulos.
 
-```bash
-$ npm install
-```
+## Endpoints Disponíveis
 
-## Running the app
+### Autenticação
 
-```bash
-# development
-$ npm run start
+- **POST /auth/register**: Registrar um novo usuário.
+- **POST /auth/login**: Fazer login e obter um token JWT.
 
-# watch mode
-$ npm run start:dev
+### Emblemas
 
-# production mode
-$ npm run start:prod
-```
+- **GET /badges**: Listar todos os emblemas.
+- **GET /badges/user/:userId/redeemed**: Listar todos os emblemas resgatados por um usuário específico (rota protegida por JWT).
+- **POST /badges/:slug/redeem**: Resgatar um emblema específico pelo slug (rota protegida por JWT).
 
-## Test
+## Instalação e Configuração
 
-```bash
-# unit tests
-$ npm run test
+### Pré-requisitos
 
-# e2e tests
-$ npm run test:e2e
+- Node.js (versão 14 ou superior)
+- MySQL
 
-# test coverage
-$ npm run test:cov
-```
+### Passos para Rodar o Projeto
 
-## Support
+1. **Clone o repositório:**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+   ```bash
+   git clone git@github.com:JaquelineAPSantos/Desafio-BackEnd-CidadeAlta.git
+   cd git@github.com:JaquelineAPSantos/Desafio-BackEnd-CidadeAlta.git
 
-## Stay in touch
+2. **Instale as dependências:**
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+ - npm install
 
-## License
+3. **Configuração do Banco de Dados:**
 
-Nest is [MIT licensed](LICENSE).
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USER=root
+DATABASE_PASSWORD=sua-senha
+DATABASE_NAME=nome-do-banco
+JWT_SECRET=sua-chave-secreta
