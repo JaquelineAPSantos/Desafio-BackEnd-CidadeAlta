@@ -51,11 +51,12 @@ Este projeto é uma API para gerenciar usuários e emblemas (badges), permitindo
 2. **Instale as dependências:**
    
   ```bash
- - npm install
+ npm install
 
 3. **Configuração do Banco de Dados:**
 
 ```bash
+
 DATABASE_HOST=localhost
 DATABASE_PORT=3306
 DATABASE_USER=root
@@ -66,11 +67,13 @@ JWT_SECRET=sua-chave-secreta
 4. **Inicie a aplicação:**
 
 ```bash
+
 npm run start:dev
 
 5. **Acesse a documentação da API:**
 
 ```bash
+
 Abra o navegador e acesse http://localhost:3000/api para visualizar a documentação da API gerada pelo Swagger.
 
 ## Testando a API
