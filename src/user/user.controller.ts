@@ -4,6 +4,7 @@ import { UserBadge } from './user-badge.entity';
 import { User } from './user.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateUserDto } from './user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -16,14 +17,11 @@ export class UserController {
     status: 201,
     description: 'The user has been successfully created.',
   })
-  async createUser(
-    @Body('username') username: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ): Promise<User> {
+  @ApiResponse({ status: 400, description: 'Invalid input' })
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    const { username, email, password } = createUserDto;
     return this.userService.createUser(username, email, password);
   }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, description: 'User details.' })

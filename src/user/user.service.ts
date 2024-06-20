@@ -25,7 +25,17 @@ export class UserService {
     if (!username) {
       username = 'default_username';
     }
-    const newUser = this.userRepository.create({ username, email, password });
+    if (!password) {
+      password = 'default_password';
+    }
+
+    const hashedPassword = await this.hashPassword(password);
+
+    const newUser = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
     return this.userRepository.save(newUser);
   }
 
