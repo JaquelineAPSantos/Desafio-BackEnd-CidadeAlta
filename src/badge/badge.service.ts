@@ -1,5 +1,5 @@
 import { BadgeRepository } from './badge.repository';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Badge } from './badge.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserBadgeRepository } from 'src/user/user-badge.repository';
@@ -45,13 +45,15 @@ export class BadgeService {
       badge.id,
     );
     if (existingUserBadge) {
-      throw new Error('Badge already redeemed by this user');
+      throw new ConflictException('Badge already redeemed');
     }
 
     const userBadge = this.userBadgeRepository.create({
       user: { id: userId },
       badge,
+      redeemedAt: new Date(),
     });
+
     await this.userBadgeRepository.save(userBadge);
   }
 

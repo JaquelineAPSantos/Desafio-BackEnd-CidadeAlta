@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -7,6 +11,8 @@ import { Badge } from '../badge/badge.entity';
 import { UserRepository } from './user.repository';
 import { UserBadgeRepository } from './user-badge.repository';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from '../dtos/user.dto';
+import { DuplicateCheckService } from './duplicate-check.service';
 
 @Injectable()
 export class UserService {
@@ -15,17 +21,29 @@ export class UserService {
     private userBadgeRepository: UserBadgeRepository,
     @InjectRepository(Badge)
     private badgeRepository: Repository<Badge>,
+    private readonly duplicateCheckService: DuplicateCheckService,
   ) {}
 
-  async createUser(
-    username: string,
-    email: string,
-    password: string,
-  ): Promise<User> {
-    if (!username) {
-      username = 'default_username';
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const { username, email, password } = createUserDto;
+
+    const usernameTaken =
+      await this.duplicateCheckService.isUsernameTaken(username);
+    if (usernameTaken) {
+      throw new ConflictException('Username already taken');
     }
-    const newUser = this.userRepository.create({ username, email, password });
+    const emailTaken = await this.duplicateCheckService.isEmailTaken(email);
+    if (emailTaken) {
+      throw new ConflictException('Email already taken');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
     return this.userRepository.save(newUser);
   }
 
@@ -34,8 +52,17 @@ export class UserService {
     return user || null;
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return user || null;
+  }
+
   async findOne(userId: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id: userId } });
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
   async findAllBadges(userId: number): Promise<UserBadge[]> {
@@ -51,7 +78,7 @@ export class UserService {
     const badge = await this.badgeRepository.findOne({ where: { slug } });
 
     if (!user || !badge) {
-      throw new Error('User or Badge not found');
+      throw new NotFoundException('User or Badge not found');
     }
 
     const existingUserBadge = await this.userBadgeRepository.findOne({
@@ -59,7 +86,7 @@ export class UserService {
     });
 
     if (existingUserBadge) {
-      throw new Error('Badge already redeemed');
+      throw new ConflictException('Badge already redeemed');
     }
 
     const userBadge = new UserBadge();
