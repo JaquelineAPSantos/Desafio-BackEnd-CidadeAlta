@@ -4,13 +4,15 @@ import {
   Query,
   Param,
   Post,
-  Body,
   UseGuards,
+  Request,
+  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { BadgeService } from './badge.service';
 import { Badge } from './badge.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @ApiTags('badges')
 @Controller('badges')
@@ -59,12 +61,21 @@ export class BadgeController {
     return this.badgeService.getRedeemedBadges(userId);
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Post(':slug/redeem')
   @ApiOperation({ summary: 'Redeem a badge' })
   async redeemBadge(
     @Param('slug') badgeSlug: string,
-    @Body('userId') userId: number,
+    @Request() req,
   ): Promise<void> {
-    await this.badgeService.redeemBadge(userId, badgeSlug);
+    try {
+      if (!req.user || !req.user.userId) {
+        throw new UnauthorizedException('User ID not found in token');
+      }
+
+      await this.badgeService.redeemBadge(req.user.userId, badgeSlug);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to redeem badge');
+    }
   }
 }

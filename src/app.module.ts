@@ -7,13 +7,14 @@ import { AppController } from './app.controller';
 import { User } from './user/user.entity';
 import { UserBadge } from './user/user-badge.entity';
 import { Badge } from './badge/badge.entity';
-import { JwtStrategy } from './auth/jwt.strategy';
+import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
-import { jwtConstants } from './auth/jwtConstants';
+import { jwtConstants } from './jwt/jwtConstants';
+import { DuplicateCheckService } from './user/duplicate-check.service';
 
 @Module({
   imports: [
@@ -36,7 +37,13 @@ import { jwtConstants } from './auth/jwtConstants';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService, UserService, JwtStrategy, AppService],
+  providers: [
+    AuthService,
+    UserService,
+    JwtStrategy,
+    AppService,
+    DuplicateCheckService,
+  ],
   controllers: [AppController],
 })
 export class AppModule {}
