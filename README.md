@@ -78,11 +78,11 @@ Este projeto é uma API para gerenciar usuários e emblemas (badges), permitindo
 
 ## Testando a API
 
-### Registro de Usuário
+### Registrar um usuário
 
 #### Requisição:
 - **Método:** POST
-- **URL:** `http://localhost:3000/auth/register`
+- **URL:** `http://localhost:3000/users`
 - **Body:**
   ```json
   {
@@ -109,7 +109,7 @@ Este projeto é uma API para gerenciar usuários e emblemas (badges), permitindo
   ```json
    {
      "username": "cecilia",            
-     "password": "123456"
+     "email": "cecilia@teste.com"
     }
 
 
@@ -149,7 +149,7 @@ Este projeto é uma API para gerenciar usuários e emblemas (badges), permitindo
  
   ```json
   {
-    "userId": 1                         
+    "userId": 9                         
   }
 
 - **Resposta Esperada:**
